@@ -1831,21 +1831,34 @@ def run_agent(args):
                 except Exception:
                     steps = []
                 gs["plan"] = steps
-                if vok:
-                    try:
-                        if job and job.get("name"):
-                            _jm.record_success(memory, job["name"])
-                            gs["learned"] = job["name"]
-                        elif steps:
-                            _jm.upsert_job(
-                                memory, text[:60], procedure=steps[:12],
-                                context="learned from verified execution",
-                                verification="engine-verified",
-                                provenance="kernel")
-                            gs["learned"] = text[:60]
-                    except Exception as e:
-                        log.warning(f"kernel learn failed: {e}")
-                _kernel_say(_cw.summarize_goal(gs))
+                _completed_ok = [c for c in (getattr(st, "completed_steps", "") or [])
+                                 if getattr(c, "success", False)]
+                if not steps and not _completed_ok:
+                    # Empty plan: the request held nothing actionable, so no
+                    # work ever started. Announcing a verification failure
+                    # here would be noise without purpose — instead the
+                    # brain asks what the task is, in its own words.
+                    log.info("kernel: empty plan for %r, asking conversationally",
+                             text[:60])
+                    gs["verify_ok"] = None
+                    gs["failure"] = ""
+                    _dispatch_conversational(text, interrupted=False)
+                else:
+                    if vok:
+                        try:
+                            if job and job.get("name"):
+                                _jm.record_success(memory, job["name"])
+                                gs["learned"] = job["name"]
+                            elif steps:
+                                _jm.upsert_job(
+                                    memory, text[:60], procedure=steps[:12],
+                                    context="learned from verified execution",
+                                    verification="engine-verified",
+                                    provenance="kernel")
+                                gs["learned"] = text[:60]
+                        except Exception as e:
+                            log.warning(f"kernel learn failed: {e}")
+                    _kernel_say(_cw.summarize_goal(gs))
             except Exception:
                 log.exception("kernel task thread failed")
                 _kernel_say("That hit a problem on my side.")
@@ -1926,8 +1939,18 @@ def run_agent(args):
                         import asyncio
                         asyncio.run(_task_engine.resume())
                         st = _task_engine.task_state
-                        gs["verify_ok"] = _cw.verified_ok(st)
-                        _kernel_say(_cw.summarize_goal(gs))
+                        _completed_ok = [c for c in (getattr(st, "completed_steps", "") or [])
+                                         if getattr(c, "success", False)]
+                        _steps = [s for s in (getattr(st, "subgoals", "") or []) if s]
+                        if not _steps and not _completed_ok:
+                            # Resumed into an empty plan: nothing to verify,
+                            # so don't announce failure — ask instead.
+                            gs["verify_ok"] = None
+                            _dispatch_conversational(
+                                gs.get("goal", "") or "continue", interrupted=False)
+                        else:
+                            gs["verify_ok"] = _cw.verified_ok(st)
+                            _kernel_say(_cw.summarize_goal(gs))
                     except Exception:
                         log.exception("resume failed")
                         _kernel_say("That hit a problem on my side.")
