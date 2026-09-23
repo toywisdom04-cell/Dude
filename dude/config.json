@@ -55,6 +55,7 @@
   "brain": {
     "temperature": 0.5,
     "max_tool_hops": 25,
+    "max_auto_turns": 4,
     "history_turns": 12,
     "providers": [
       {

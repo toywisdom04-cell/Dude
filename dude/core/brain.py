@@ -500,9 +500,9 @@ class Brain:
         # First-output budget per lane: live turns abandon a stalled
         # provider in seconds (then fail over); deep work gets longer.
         self._first_output_timeout = {"fast": 6, "chat": 8}.get(mode, 20)
-        # Hop budget matches task complexity: fast 3, conversational 6,
-        # deep configurable (default 10). Ordinary live turns can never
-        # wander a long tool loop; hard stop preserved in-loop.
+        # Hop budget matches task complexity: fast 3, conversational 10,
+        # deep configurable (default 10). Hitting the budget no longer ends
+        # the work: the turn auto-continues (up to max_auto_turns) instead.
         history = self.memory.recent_messages(
             limit=self.cfg.get("brain", "history_turns", default=24))
         ctx = build_context(self.memory)
@@ -553,6 +553,19 @@ class Brain:
                     hops = 0
                     tools_run = 0
                     budget_warned = False
+                    # Auto-continue budget: how many fresh hop budgets one
+                    # chat() call may chain before it must stop. Fast lane
+                    # stays single-turn (a 3-hop job that needs more was
+                    # misrouted, not long).
+                    if mode == "fast":
+                        max_auto = 0
+                    else:
+                        try:
+                            max_auto = max(1, int(self.cfg.get(
+                                "brain", "max_auto_turns", default=4)))
+                        except Exception:
+                            max_auto = 4
+                    auto_turns = 0
                     if hop_cap is not None:
                         max_hops = hop_cap
                     elif mode == "fast":
@@ -640,12 +653,31 @@ class Brain:
                                 return content
                         hops += 1
                         if hops > max_hops:
-                            # Safety bound stays (runaway/cost protection),
-                            # but the user is told a one-line status only —
-                            # never a problem dump, never begging. Details
-                            # stay in logs/state for the next turn.
-                            on_delta("Still working on it, sir.")
-                            return ""
+                            # No-stop rule: instead of ending the turn, the
+                            # machine continues itself — same context, same
+                            # duplicate guards, fresh hop budget. The user is
+                            # never asked to say "continue". Bounded only by
+                            # max_auto_turns (runaway/cost protection); the
+                            # bound is high and only speaks once per call.
+                            auto_turns += 1
+                            if auto_turns > max_auto:
+                                on_delta("Still working on it, sir.")
+                                return ""
+                            if auto_turns == 1:
+                                on_delta("Still on it \u2014 continuing.")
+                            log.info("brain: auto-continue turn %d/%d",
+                                     auto_turns, max_auto)
+                            local_messages.append({
+                                "role": "user",
+                                "content": ("Continue the task from exactly where "
+                                            "you left off. Do NOT repeat completed "
+                                            "steps and do NOT speak until you are "
+                                            "done or truly blocked. Work quietly, "
+                                            "then summarize in one short line."),
+                            })
+                            hops = 0
+                            budget_warned = False
+                            continue
                         for tc in assistant_msg["tool_calls"]:
                             on_tool(tc["function"]["name"])
                             try:

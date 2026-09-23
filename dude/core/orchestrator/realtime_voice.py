@@ -2008,7 +2008,10 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         
         thread = threading.Thread(target=run_task, daemon=True)
         thread.start()
-        thread.join(timeout=180.0)  # Wait for task completion
+        # No time budget: join until the work actually completes. The run
+        # always resolves (result or exception path), and the user can
+        # still stop it by saying "stop".
+        thread.join()
         
         if result_holder["result"]:
             return result_holder["result"]
@@ -2153,7 +2156,8 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 result_holder["done"] = True
         thread = threading.Thread(target=run_task, daemon=True)
         thread.start()
-        thread.join(timeout=180.0)
+        # No time budget: join until the work actually completes (see above).
+        thread.join()
         if result_holder["result"]:
             return result_holder["result"]
         return DeepResult(speech_reply="I couldn't finish that one, sir.", task_id="", long_running=False)
