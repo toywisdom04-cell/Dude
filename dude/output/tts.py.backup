@@ -1,0 +1,77 @@
+"""Text-to-speech output using pyttsx3.
+
+Natural-sounding speech: adjustable rate/pitch, varied sentence rhythm.
+Support barge-in by allowing the conversation manager to stop speech.
+"""
+import logging
+import threading
+
+logger = logging.getLogger(__name__)
+
+
+class TextToSpeech:
+    def __init__(self, rate: int = 185, voice_index: int = 0):
+        self.rate = rate
+        self.voice_index = voice_index
+        self._engine = None
+        self._lock = threading.Lock()
+        self._stop_requested = False
+
+    @property
+    def engine(self):
+        if self._engine is None:
+            try:
+                import pyttsx3
+                self._engine = pyttsx3.init()
+                self._configure()
+            except Exception as exc:
+                logger.error("Could not initialize TTS: %s", exc)
+                return None
+        return self._engine
+
+    def _configure(self) -> None:
+        if self._engine is None:
+            return
+        try:
+            voices = self._engine.getProperty("voices")
+            if voices and self.voice_index < len(voices):
+                self._engine.setProperty("voice", voices[self.voice_index].id)
+            self._engine.setProperty("rate", self.rate)
+        except Exception as exc:
+            logger.warning("TTS configure failed: %s", exc)
+
+    def set_voice(self, index: int) -> None:
+        self.voice_index = index
+        self._configure()
+
+    def set_rate(self, rate: int) -> None:
+        self.rate = rate
+        if self._engine is not None:
+            self._engine.setProperty("rate", rate)
+
+    def speak(self, text: str, interruptible: bool = True) -> None:
+        """Speak text synchronously. Returns when done or interrupted."""
+        engine = self.engine
+        if engine is None:
+            return
+        self._stop_requested = False
+        try:
+            with self._lock:
+                engine.say(text)
+                engine.runAndWait()
+        except Exception as exc:
+            logger.warning("TTS speak failed: %s", exc)
+
+    def stop(self) -> None:
+        """Stop current speech (barge-in support)."""
+        self._stop_requested = True
+        try:
+            engine = self._engine
+            if engine is not None:
+                engine.stop()
+        except Exception:
+            pass
+
+    def available(self) -> bool:
+        return self.engine is not None
+

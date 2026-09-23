@@ -1,0 +1,13 @@
+# Regenerable / machine-local: never backed up to git
+dude/data/
+dude/data_backup_*/
+tessdata/
+dude/dist/
+*.zip
+*.log
+__pycache__/
+.pytest_cache/
+*.pyc
+dude.lock
+*.db-shm
+*.db-wal

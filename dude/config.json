@@ -1,0 +1,332 @@
+{
+  "assistant_name": "Dude",
+  "user_title": "sir",
+  "knowledge_paths": [
+    "E:\\Dude\\dude\\data\\knowledge\\notes"
+  ],
+  "vault_path": "E:\\OmniRoute API Key - sk-69b5bd394058.txt",
+  "permissions": {
+    "auto_allow_all_except": [
+      "delete_path",
+      "shutdown_system",
+      "restart_system"
+    ],
+    "always_allow": [
+      "open_app",
+      "close_app",
+      "open_url",
+      "launch_app",
+      "type_text",
+      "press_hotkey",
+      "click_at",
+      "click_fraction",
+      "run_powershell",
+      "write_file",
+      "create_folder",
+      "move_path",
+      "copy_path",
+      "screenshot"
+    ]
+  },
+  "voice": {
+    "tts_voice": "en-US-ChristopherNeural",
+    "rate": "+0%",
+    "volume": "+0%"
+  },
+  "ear": {
+    "whisper_model": "base.en",
+    "language": "en",
+    "barge_in": true,
+    "sample_rate": 16000,
+    "frame_ms": 32,
+    "silence_end_ms": 2500,
+    "min_speech_ms": 250,
+    "interrupt_min_speech_ms": 350,
+    "vad": "webrtc",
+    "mic_index": null,
+    "mic_gain": 6.0,
+    "vad_min_rms": 0.012,
+    "vad_aggressiveness": 2,
+    "min_utt_rms": 0.008
+  },
+  "brain": {
+    "temperature": 0.5,
+    "max_tool_hops": 25,
+    "history_turns": 12,
+    "providers": [
+      {
+        "name": "claude",
+        "enabled": true,
+        "base_url": "https://opencode.ai/zen/v1",
+        "api_key": "",
+        "model": "nemotron-3-ultra-free",
+        "vision": false,
+        "timeout": 30,
+        "fallback": true
+      },
+      {
+        "name": "naravision",
+        "enabled": false,
+        "base_url": "https://router.bynara.id/v1",
+        "api_key": "sk-nry-4924in3mgZXTRs6alUJ2pZwiibU9OQG502PwQrqQ0OU",
+        "model": "agnes-2.0-flash",
+        "vision": false,
+        "chat": false,
+        "timeout": 60,
+        "fallback": true
+      },
+      {
+        "name": "gemini",
+        "enabled": false,
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "api_key": "",
+        "model": "gemini-flash-latest",
+        "vision": false,
+        "timeout": 60,
+        "fallback": true
+      },
+      {
+        "name": "codestral",
+        "enabled": false,
+        "base_url": "https://codestral.mistral.ai/v1",
+        "api_key": "",
+        "model": "codestral-latest",
+        "timeout": 60,
+        "fallback": true
+      },
+      {
+        "name": "freemodel",
+        "enabled": false,
+        "base_url": "https://api.freemodel.dev/v1",
+        "api_key": "",
+        "model": "gpt-5.6-luna",
+        "vision": false,
+        "timeout": 30,
+        "browser_ua": true,
+        "fallback": true
+      },
+      {
+        "name": "zen-nemotron",
+        "enabled": false,
+        "base_url": "https://opencode.ai/zen/v1",
+        "api_key": "",
+        "model": "nemotron-3-ultra-free",
+        "vision": false,
+        "timeout": 120
+      },
+      {
+        "name": "lmstudio",
+        "enabled": false,
+        "base_url": "http://localhost:1234/v1",
+        "api_key": "lmstudio",
+        "model": "qwen3-4b-instruct-2507",
+        "timeout": 240,
+        "connect_timeout": 4
+      },
+      {
+        "name": "omni",
+        "enabled": false,
+        "base_url": "http://localhost:20128/v1",
+        "api_key": "",
+        "model": "agy/claude-opus-4-6-thinking",
+        "timeout": 120,
+        "connect_timeout": 2
+      },
+      {
+        "name": "openrouter",
+        "enabled": true,
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_key": "",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "timeout": 25,
+        "api_key_env": "OPENROUTER_API_KEY",
+        "connect_timeout": 5
+      },
+      {
+        "name": "ollama-vision",
+        "enabled": false,
+        "base_url": "http://localhost:11434/v1",
+        "api_key": "ollama",
+        "model": "qwen2.5vl:7b",
+        "vision": false,
+        "chat": false,
+        "timeout": 300,
+        "extra_body": {
+          "keep_alive": "15m"
+        }
+      },
+      {
+        "name": "openrouter-fast",
+        "enabled": false,
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_key": "",
+        "api_key_env": "OPENROUTER_API_KEY",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+        "timeout": 25,
+        "connect_timeout": 5,
+        "fallback": true
+      },
+      {
+        "name": "openrouter-reason",
+        "enabled": false,
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_key": "",
+        "api_key_env": "OPENROUTER_API_KEY",
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "timeout": 25,
+        "connect_timeout": 5,
+        "fallback": true
+      },
+      {
+        "name": "nararouter",
+        "enabled": true,
+        "base_url": "https://router.bynara.id/v1",
+        "api_key": "",
+        "model": "agnes-2.5-flash",
+        "vision": false,
+        "timeout": 120,
+        "connect_timeout": 5,
+        "fallback": true,
+        "tool_subset": [
+          "get_datetime",
+          "battery_status",
+          "open_app",
+          "close_app",
+          "list_running_apps",
+          "list_directory",
+          "read_file",
+          "write_file",
+          "create_folder",
+          "move_path",
+          "copy_path",
+          "search_files",
+          "run_powershell",
+          "screenshot",
+          "open_url",
+          "press_hotkey",
+          "type_text",
+          "click_at",
+          "click_fraction",
+          "scroll_screen",
+          "window_action",
+          "set_volume",
+          "media_key",
+          "remember_about_user",
+          "recall_about_user"
+        ]
+      },
+      {
+        "name": "9router",
+        "enabled": false,
+        "base_url": "http://localhost:20128/v1",
+        "api_key": "",
+        "model": "claude-opus-free",
+        "vision": false,
+        "timeout": 30,
+        "connect_timeout": 3,
+        "autostart_command": "9router",
+        "fallback": true
+      },
+      {
+        "name": "ollama-local",
+        "enabled": false,
+        "base_url": "http://localhost:11434/v1",
+        "api_key": "ollama",
+        "model": "qwen3:4b",
+        "timeout": 300,
+        "connect_timeout": 5,
+        "autostart_command": "",
+        "fallback": true,
+        "tool_subset": [
+          "get_datetime",
+          "battery_status",
+          "open_app",
+          "close_app",
+          "list_running_apps",
+          "list_directory",
+          "read_file",
+          "write_file",
+          "create_folder",
+          "move_path",
+          "copy_path",
+          "search_files",
+          "run_powershell",
+          "screenshot",
+          "open_url",
+          "press_hotkey",
+          "type_text",
+          "click_at",
+          "click_fraction",
+          "scroll_screen",
+          "window_action",
+          "set_volume",
+          "media_key",
+          "remember_about_user",
+          "recall_about_user"
+        ],
+        "extra_body": {
+          "enable_thinking": false,
+          "keep_alive": "30m"
+        }
+      }
+    ],
+    "provider_timeout": 300
+  },
+  "tracker": {
+    "poll_seconds": 10,
+    "enabled": true
+  },
+  "ambient": {
+    "enabled": true,
+    "wake_word_only": false,
+    "observer": true,
+    "capture_seconds": 30,
+    "analysis_minutes": 10,
+    "max_screens": 120
+  },
+  "observe": {
+    "capture_seconds": 4,
+    "analyze_seconds": 25,
+    "motion_threshold": 2.0,
+    "max_batch_screens": 6,
+    "ocr": true,
+    "ocr_path": ""
+  },
+  "scheduler": {
+    "poll_seconds": 15,
+    "enabled": true
+  },
+  "presence": {
+    "enabled": true,
+    "idle_away_s": 180
+  },
+  "autopilot": {
+    "enabled": true,
+    "interval_s": 120
+  },
+  "thinker": {
+    "enabled": true,
+    "interval_minutes": 15,
+    "max_per_day": 24
+  },
+  "live_learner": {
+    "enabled": true,
+    "interval_minutes": 35,
+    "max_per_day": 8
+  },
+  "orchestrator": {
+    "enabled": true,
+    "use_new_task_engine": true,
+    "use_new_perception": true,
+    "use_new_action_executor": true,
+    "use_real_execution": true,
+    "enable_procedure_learning": false,
+    "enable_procedure_adaptation": false,
+    "enable_procedure_composition": false,
+    "enable_semantic_vision": false,
+    "enable_observation_learning": true,
+    "min_skill_confidence": 0.8,
+    "min_procedure_confidence": 0.6,
+    "min_local_confidence": 0.7
+  }
+}

@@ -1,0 +1,197 @@
+"""DUDEAgent: the central event loop.
+
+Runs a non-blocking lifecycle:
+- Wakes (on start) and greets with time-aware, session-resume message.
+- Continuously listens; dispatches to the brain router.
+- Executes tools with permission gating.
+- Logs everything to memory.
+- Checks schedule/reminders periodically.
+"""
+import datetime
+import logging
+import threading
+import time
+from pathlib import Path
+
+from ..config import Config
+from ..core.conversation import ConversationManager
+from ..core.permissions import PermissionGate
+from ..llm.router import BrainRouter
+from ..memory.session import SessionState
+from ..memory.store import MemoryStore
+from ..output.tts import TextToSpeech
+from ..perception.screen import ScreenObserver
+from ..perception.stt import SpeechRecognizer
+from ..platform.registry import get_platform
+
+logger = logging.getLogger(__name__)
+
+
+class DUDEAgent:
+    def __init__(self, config: Config | None = None, data_dir: str | None = None):
+        self.config = config or Config.load()
+        if data_dir:
+            self.config.set("memory.data_dir", data_dir)
+        self.data_dir = Path(self.config.get("memory.data_dir", "./dude_data"))
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+
+        # components
+        self.memory = MemoryStore(str(self.data_dir))
+        from ..tools.schedule import set_store as _set_schedule_store
+        _set_schedule_store(self.memory)
+        self.session = SessionState(self.memory)
+        self.conversation = ConversationManager(
+            silence_wait=self.config.get("voice.silence_wait_seconds", 1.2),
+            max_context_turns=self.config.get("memory.max_context_turns", 20),
+        )
+        self.gate = PermissionGate(
+            always_allow=self.config.get("permissions.always_allow", []),
+            always_ask=self.config.get("permissions.always_ask", []),
+        )
+        self.tts = TextToSpeech(
+            rate=self.config.get("voice.tts_rate", 185),
+            voice_index=self.config.get("voice.tts_voice_index", 0),
+        )
+        self.stt = SpeechRecognizer()
+        self.brain = BrainRouter(self.config, memory=self.memory)
+        self.platform = get_platform()
+        self.screen = ScreenObserver(
+            data_dir=str(self.data_dir),
+            enabled=self.config.get("memory.learn_from_screen", False),
+        )
+
+        # runtime
+        self.running = False
+        self._lock = threading.Lock()
+        self._wake_word = self.config.get("voice.wake_word", "dude").lower()
+        self._honorific = self.config.get("user.honorific", "sir") or "sir"
+        self._last_capture = None
+        self._on_event = None  # optional UI callback: fn(event: str, data: dict)
+
+    # ---- lifecycle ----
+    def start(self, greet: bool = True) -> None:
+        self.running = True
+        self.gate.set_confirmer(self._confirm)
+        logger.info("DUDE starting (os=%s)", self.platform.name)
+        if greet:
+            self.greet()
+        self._run_loop()
+
+    def stop(self) -> None:
+        self.running = False
+
+    def set_event_callback(self, callback) -> None:
+        """UI hooks: callback('speaking', {...}) / ('listening', {}) / etc."""
+        self._on_event = callback
+
+    # ---- events ----
+    def _emit(self, event: str, **data) -> None:
+        if self._on_event:
+            try:
+                self._on_event(event, data)
+            except Exception:
+                pass
+
+    # ---- greeting ----
+    def greet(self) -> None:
+        greeting = self.session.greeting_message()
+        if not greeting:
+            hour = datetime.datetime.now().hour
+            greeting = ("Good morning" if hour < 12 else
+                        "Good afternoon" if hour < 18 else "Good evening")
+            greeting += f", {self._honorific}."
+        agenda = self.brain.skills.dispatch("today's schedule")
+        if agenda is not None and agenda.ok:
+            greeting += f" {agenda.message}"
+        self.say(greeting)
+        self._emit("greeted", message=greeting)
+
+    # ---- speaking ----
+    def say(self, text: str) -> None:
+        self._emit("speaking", text=text)
+        self.tts.speak(text)
+        self._emit("idle")
+        self.memory.add_message("assistant", text, directed=False)
+
+    # ---- listening & main loop ----
+    def _run_loop(self) -> None:
+        check_interval = self.config.get("schedule.check_interval_seconds", 30)
+        last_check = time.monotonic()
+        while self.running:
+            self._emit("listening")
+            query = self.stt.listen(timeout=5)
+            if not query:
+                self._maybe_screen_capture()
+                if time.monotonic() - last_check >= check_interval:
+                    last_check = time.monotonic()
+                    self._check_schedule()
+                continue
+
+            self.conversation.record_user(query)
+            self._emit("heard", text=query)
+            self._handle(query)
+
+            if time.monotonic() - last_check >= check_interval:
+                last_check = time.monotonic()
+                self._check_schedule()
+
+    def _handle(self, query: str) -> None:
+        directed = self._is_directed(query)
+        if not directed and not self._is_dude_asked(query):
+            # user talking to someone else - ignore politely
+            return
+
+        self._emit("thinking")
+        response = self.brain.respond(query, directed=directed)
+        self._emit("responding", text=response)
+        self.say(response)
+        self.memory.add_message("user", query, directed=directed)
+
+    def _is_directed(self, query: str) -> bool:
+        q = query.lower()
+        if self._wake_word and self._wake_word in q:
+            return True
+        # commands that are clearly directed even without wake word
+        directed_hints = ("hey ", "ok dude", "please ", "can you", "could you",
+                          "will you", "what's the", "whats the", "open ",
+                          "close ", "remind", "search", "play", "screenshot",
+                          "what time", "who", "tell me", "how", "why", "when",
+                          "set ", "change ", "volume", "mute", "weather")
+        return any(hint in q for hint in directed_hints)
+
+    def _is_dude_asked(self, query: str) -> bool:
+        return "dude" in query.lower() or self._honorific in query.lower()
+
+    # ---- permission confirmation ----
+    def _confirm(self, action: str, description: str) -> bool:
+        """Ask the user for permission by voice. Returns True if granted."""
+        if not self.config.get("user.name"):
+            prompt = (f"Do you allow me to {description or action}, {self._honorific}? "
+                      "Please say yes or no.")
+        else:
+            prompt = (f"Sir, may I {description or action}? Please say yes or no.")
+        self.say(prompt)
+        answer = self.stt.listen(timeout=8)
+        if answer and "yes" in answer.lower():
+            self.say("Done, sir.")
+            return True
+        self.say("Very well, sir. I'll skip that.")
+        return False
+
+    # ---- schedule ----
+    def _check_schedule(self) -> None:
+        try:
+            due = self.memory.due_reminders()
+            for r in due:
+                self.say(f"Reminder, sir: {r['title']}.")
+                self.memory.complete_reminder(r["id"])
+                self.memory.log_action("reminder_fired", r["title"])
+        except Exception as exc:
+            logger.warning("Schedule check failed: %s", exc)
+
+    # ---- observation ----
+    def _maybe_screen_capture(self) -> None:
+        if self.screen.should_capture(self._last_capture):
+            self._last_capture = datetime.datetime.now()
+            self.screen.capture()
+

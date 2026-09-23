@@ -1,0 +1,17 @@
+openai>=1.60.0
+requests>=2.31
+faster-whisper>=1.1.0
+onnxruntime>=1.19
+sounddevice>=0.4.7
+numpy>=1.26
+edge-tts>=7.0.0
+pygame>=2.6
+pyttsx3>=2.90
+psutil>=6.0
+pywin32>=306; sys_platform == "win32"
+Pillow>=10.0
+pyautogui>=0.9.54
+pycaw>=20240210
+comtypes>=1.4
+opencv-python>=4.10
+pystray>=0.19

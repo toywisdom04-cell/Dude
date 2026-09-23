@@ -1,0 +1,59 @@
+{
+  "user": {
+    "name": "hey dude",
+    "honorific": "sir",
+    "auto_start": false
+  },
+  "llm": {
+    "online_backend": "gemini",
+    "offline_backend": "local",
+    "gemini": {
+      "api_key": "AIzaSyDKQHFQCVxAwK2Lr0OjQUwfYMpMXEH3_U0",
+      "model": "gemini-3.6-flash",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta"
+    },
+    "local": {
+      "base_url": "http://localhost:11434/v1",
+      "model": "llama3.2:3b",
+      "timeout": 60
+    }
+  },
+  "voice": {
+    "tts_rate": 185,
+    "tts_voice_index": 0,
+    "wake_word": "dude",
+    "silence_wait_seconds": 1.2,
+    "vad_aggressiveness": 2
+  },
+  "permissions": {
+    "always_allow": [
+      "open_app",
+      "tell_time",
+      "search_files",
+      "weather",
+      "joke",
+      "screenshot"
+    ],
+    "always_ask": [
+      "run_command",
+      "delete",
+      "send_email",
+      "send_message",
+      "write_file",
+      "change_settings",
+      "shutdown"
+    ]
+  },
+  "memory": {
+    "data_dir": "./dude_data",
+    "learn_from_screen": false,
+    "nightly_learning": true,
+    "max_context_turns": 20
+  },
+  "schedule": {
+    "check_interval_seconds": 30,
+    "reminder_lead_minutes": 5
+  }
+}
+
+

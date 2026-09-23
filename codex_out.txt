@@ -1,0 +1,2 @@
+﻿opencode -s ses_fc322ed55ffeG9yzTNfj76rQjF
+FOCUS_OK=False
