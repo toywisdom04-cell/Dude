@@ -237,16 +237,18 @@ class Ear:
         self._last_choice = None
 
         # Barge-in: while we are talking, watch for the user cutting back in.
-        # Note: on speaker+mic setups our own TTS echoes back at the mic with
-        # near-full-scale peaks, so barge-in can cut DUDE off on ITSELF. It is
-        # therefore OFF by default; enable with {"ear": {"barge_in": 1}} in
-        # config.json when using a headset or when DUDE's audio doesn't reach
-        # the mic.
+        # Our own TTS bleeds into the mic, so voice-activity alone would cut
+        # DUDE off on ITSELF. Barge frames must therefore ALSO be clearly
+        # louder than the speaker bleed (adaptive bar), not just voiced.
+        # Tune: {"ear": {"barge_min_rms": 0.04, "barge_echo_ratio": 2.5,
+        # "barge_sustain_frames": 8}} in config.json.
         barge_val = self.cfg.get("ear", "barge_in", default=0)
         self.barge_enabled = bool(barge_val)
         self.barge_sustain = int(self.cfg.get("ear", "barge_sustain_frames", default=8))
         self._barge_ready_at = float("inf")
         self._barge_frames = 0
+        self._barge_miss = 0
+        self._echo_ema = float(self.cfg.get("ear", "barge_min_rms", default=0.04))
         self._in_barge_capture = False
 
         self.vad = None
@@ -671,19 +673,44 @@ class Ear:
 
             if speaking and self.barge_enabled and not self._in_barge_capture \
                     and now >= self._barge_ready_at:
-                if prob >= 0.5:
+                # Middle sensitivity: a frame counts toward interruption only
+                # when it is BOTH voiced AND clearly louder than DUDE's own
+                # speaker bleed. The bar adapts: it tracks the bleed level and
+                # never lets loud frames raise it, so small flinches and our
+                # own voice pass under it while a real interruption clears it.
+                try:
+                    _raw = np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768.0
+                    _rms = float(np.sqrt(np.mean(np.square(_raw))) + 1e-9)
+                except Exception:
+                    _rms = 0.0
+                _floor = float(self.cfg.get("ear", "barge_min_rms", default=0.04))
+                _ratio = float(self.cfg.get("ear", "barge_echo_ratio", default=2.5))
+                _base = self._echo_ema or _floor
+                _bar = max(_floor, _base * _ratio)
+                if prob >= 0.5 and _rms >= _bar:
                     self._barge_frames += 1
+                    self._barge_miss = 0
                     if self._barge_frames >= self.barge_sustain:
                         self._barge_frames = 0
                         self._in_barge_capture = True
                         self._echo_until = max(self._echo_until, now + 0.150)
                         self._lockout_until = max(self._lockout_until, now + 0.150)
+                        log.info("barge-in: VOICED rms=%.4f bar=%.4f frames=%d",
+                                 _rms, _bar, self.barge_sustain)
                         try:
                             self.on_barge_in()
                         except Exception:
                             pass
                 else:
-                    self._barge_frames = 0
+                    # Quiet frame: fold it into the bleed baseline, then allow
+                    # a few sub-threshold frames (breath dips) without wiping
+                    # a genuine interruption run.
+                    if _rms < _bar:
+                        self._echo_ema = _base + 0.1 * (_rms - _base)
+                    self._barge_miss += 1
+                    if self._barge_miss > BARGE_TOLERANCE:
+                        self._barge_frames = 0
+                        self._barge_miss = 0
 
             if speaking or now < self._echo_until or now < self._lockout_until:
                 prob = 0.0
