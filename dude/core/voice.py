@@ -25,6 +25,10 @@ class Voice:
         self._thread = threading.Thread(target=self._worker, daemon=True, name="du-voice")
         self._thread.start()
         self._mixer_ready = False
+        # Prefetch cache: combined-text -> synthesized mp3 path. Filled by
+        # prewarm() while the current chunk plays; consumed by _speak_text.
+        self._synth_cache = {}
+        self._cache_lock = threading.Lock()
         log.info("VOICE_SELECTED backend=edge-tts voice_id=%s rate=%s volume=%s "
                  "fallback=sapi5-robotic-on-mixer-failure",
                  self.cfg.get("voice", "tts_voice",
@@ -61,6 +65,10 @@ class Voice:
 
     def abort(self):
         self.interrupt()
+        with self._cache_lock:
+            for _, p in list(self._synth_cache.items()):
+                self._rm(p)
+            self._synth_cache.clear()
         while True:
             try:
                 self.q.get_nowait()
@@ -123,6 +131,18 @@ class Voice:
                 # over the user. New speech clears the flag in say().
                 log.info("STALE_TTS_DROPPED %r", str(item)[:80])
                 continue
+            # Prefetch: while this item plays, synthesize the NEXT queued
+            # item in the background so there is no network gap between
+            # consecutive sentences.
+            try:
+                nxt = self.q.queue[0]
+            except Exception:
+                nxt = None
+            if isinstance(nxt, str) and nxt.strip():
+                try:
+                    self.prewarm(self._combined(nxt))
+                except Exception:
+                    pass
             self.interrupted = False
             self._speak_text(item)
             self._speaking.clear()
@@ -134,28 +154,77 @@ class Voice:
             except Exception:
                 pass
 
-    def _speak_text(self, text):
-        log.info("voice: speaking item: %r", text[:100])
+    def _combined(self, text):
+        """Exact speakable text for a queue item (sanitize → sentences → cap)."""
         cap = max(1, int(self.cfg.get("voice", "max_spoken_sentences", default=2)))
         sentences = self._sentences(self._sanitize_for_tts(text))[:cap]
-        if not sentences:
-            return
-        if self._stop_evt.is_set():
-            return
-        combined = " ".join(sentences)
-        path = None
+        return " ".join(sentences)
+
+    @staticmethod
+    def _rm(path):
         try:
-            path = self._synth(combined)
-        except Exception as e:
-            print(f"[voice] tts failed, using SAPI fallback: {e}")
-            log.warning("voice: tts failed, SAPI fallback: %s", e)
-            self._fallback_speak(combined)
+            if path and os.path.exists(path):
+                os.remove(path)
+        except OSError:
+            pass
+
+    def prewarm(self, key):
+        """Background-synthesize `key` (already-combined text) into the
+        prefetch cache. Best effort: failures just mean normal synthesis
+        later. Bounded so barges can't pile up wasted work."""
+        key = (key or "").strip()
+        if not key:
+            return
+        with self._cache_lock:
+            if key in self._synth_cache:
+                return
+            if len(self._synth_cache) >= 3:
+                return
+
+        def _run():
+            try:
+                path = self._synth(key)
+            except Exception:
+                return
+            with self._cache_lock:
+                if key in self._synth_cache:
+                    self._rm(path)  # raced with a fresher synth; drop dup
+                    return
+                while len(self._synth_cache) >= 3:
+                    _, old = self._synth_cache.popitem(last=False)
+                    self._rm(old)
+                self._synth_cache[key] = path
+
+        threading.Thread(target=_run, daemon=True,
+                         name="du-voice-prewarm").start()
+
+    def _speak_text(self, text):
+        log.info("voice: speaking item: %r", text[:100])
+        combined = self._combined(text)
+        if not combined:
             return
         if self._stop_evt.is_set():
-            # Interrupted while synthesizing (network call is blocking and
-            # cannot be cancelled): drop the utterance instead of playing
-            # a full stale chunk over the user after a barge-in.
             return
+        with self._cache_lock:
+            path = self._synth_cache.pop(combined, None)
+            if path and not os.path.exists(path):
+                path = None
+        if path is not None:
+            log.info("voice: prefetch hit, skipping synthesis")
+        else:
+            try:
+                path = self._synth(combined)
+            except Exception as e:
+                print(f"[voice] tts failed, using SAPI fallback: {e}")
+                log.warning("voice: tts failed, SAPI fallback: %s", e)
+                self._fallback_speak(combined)
+                return
+            if self._stop_evt.is_set():
+                # Interrupted while synthesizing (network call is blocking and
+                # cannot be cancelled): drop the utterance instead of playing
+                # a full stale chunk over the user after a barge-in.
+                self._rm(path)
+                return
         if self.on_speech_scheduled:
             try:
                 self.on_speech_scheduled(combined)
@@ -164,11 +233,7 @@ class Voice:
         try:
             played = self._play(path)
         finally:
-            if path and os.path.exists(path):
-                try:
-                    os.remove(path)
-                except OSError:
-                    pass
+            self._rm(path)
         if not played and not self._stop_evt.is_set():
             log.warning("VOICE_FALLBACK robotic-sapi in use: edge/mixer "
                         "playback failed for %r", combined[:60])

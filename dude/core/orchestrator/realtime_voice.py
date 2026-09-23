@@ -1433,7 +1433,7 @@ class VoiceEngineAdapter(TTSBackend):
             pass
         self._was_interrupted = False
         log.info("generation_created adapter_gen=%d chunks=%d text_len=%d", mine, len(chunks), len(text))
-        for ch in chunks:
+        for i, ch in enumerate(chunks):
             if _dead():
                 try:
                     self._voice.interrupt()
@@ -1454,6 +1454,14 @@ class VoiceEngineAdapter(TTSBackend):
             except Exception as e:
                 log.warning(f"VoiceEngineAdapter say failed: {e}")
                 return False
+            # Prefetch the next chunk's audio while this one plays. The key
+            # is computed with the worker's own pipeline, so a hit is exact
+            # and the inter-chunk gap collapses to ~0.
+            try:
+                if i + 1 < len(chunks):
+                    self._voice.prewarm(self._voice._combined(chunks[i + 1]))
+            except Exception:
+                pass
             if _dead():
                 # Lost the race between our pre-say check and say(): our
                 # say() just cleared a newer generation's stop flag. Set it
@@ -1792,6 +1800,15 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                          (time.perf_counter() - t_brain) * 1000.0)
                 ctl._lat["t_first_out"] = time.time()
                 ctl._speak(head)
+                # Prefetch the buffered remainder while the head plays: if it
+                # survives verbatim into the follow-up generation, its audio
+                # is already synthesized and the gap collapses.
+                try:
+                    _rest = " ".join(sents[1:]).strip()
+                    if _rest:
+                        voice.prewarm(voice._combined(_rest))
+                except Exception:
+                    pass
                 log.info("TTS_FIRST_AUDIO generation=%d", my_epoch)
                 ctl._lat["t_tts_enq"] = time.time()
                 _wait_first_done()
