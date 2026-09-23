@@ -1690,6 +1690,12 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         ibrief = ctx.get("interrupt_brief") or ""
         if ibrief:
             sys_extra += ibrief
+        uia_view = ctx.get("uia_view") or ""
+        if uia_view:
+            sys_extra += ("\n\nLIVE UI MAP (controls actually on screen right "
+                          "now — buttons, fields, focused control, cursor "
+                          "position; use these exact names for clicks, never "
+                          "invent control names):\n" + uia_view[:1500])
         # Query-relevant memory: the generic context block carries key
         # facts, but the model also needs records matching THIS question —
         # otherwise it answers as if it remembers nothing about the user's
@@ -2070,15 +2076,28 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 enhanced_ctx = dict(ctx)
                 enhanced_ctx["perception_focus"] = interpretation.perception_focus
                 if interpretation.intent_kind == CognitiveMode.ANSWER_FROM_LIVE_ENV:
-                    # Screen questions must be answered from evidence taken
-                    # FOR this question, not the cached snapshot (it can be
-                    # minutes old — that's when answers drift into listing
-                    # background apps instead of what's actually up).
+                    # Screen evidence must be fresh, but the answer must stay
+                    # fast: refresh in the background, wait at most ~2s, then
+                    # answer from whatever is cached (capture+OCR usually
+                    # takes well under a second; the old 12s wait is gone).
                     try:
                         if observer is not None:
-                            observer.refresh_snapshot()
+                            _rt = threading.Thread(
+                                target=observer.refresh_snapshot, daemon=True)
+                            _rt.start()
+                            _rt.join(timeout=2.0)
                     except Exception as e:
                         log.warning(f"Live snapshot refresh failed: {e}")
+                    # Live control map (buttons, fields, focused control,
+                    # cursor) so the answer names real on-screen controls
+                    # instead of guessing or listing background apps.
+                    try:
+                        _st = (capability_bus.screentree
+                               if capability_bus is not None else None)
+                        if _st is not None:
+                            enhanced_ctx["uia_view"] = _st.current_view(limit=14)
+                    except Exception as e:
+                        log.warning(f"UI map attach failed: {e}")
                 return _deep(text, enhanced_ctx)
             
             elif interpretation.intent_kind == CognitiveMode.MEMORY_OPERATION:
