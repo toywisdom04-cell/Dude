@@ -81,6 +81,22 @@ def _is_garbage_transcript(text):
             unit = alnum[:size]
             if all(alnum[i:i + size] == unit for i in range(size, len(alnum), size)):
                 return True
+    if len(words) >= 8:
+        # Looped phrase hiding behind a varied prefix/suffix ("I will …
+        # little bit of a little bit of …"): any short phrase repeated 4+
+        # times and covering most of the text is a hallucination, not speech.
+        from collections import Counter
+        for size in (2, 3, 4, 5, 6):
+            if len(words) < size * 4:
+                continue
+            grams = [" ".join(words[i:i + size])
+                     for i in range(len(words) - size + 1)]
+            _top, _count = Counter(grams).most_common(1)[0]
+            # Short loops need 4 repeats; a 4+-word phrase repeated even
+            # 3x verbatim in one breath is virtually never real speech.
+            need = 4 if size <= 3 else 3
+            if _count >= need and _count * size >= len(words) * 0.5:
+                return True
     return False
 
 
