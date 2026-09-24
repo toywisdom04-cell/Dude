@@ -31,7 +31,8 @@
   "voice": {
     "tts_voice": "en-US-ChristopherNeural",
     "rate": "+0%",
-    "volume": "+0%"
+    "volume": "+0%",
+    "realtime_loop": true
   },
   "ear": {
     "whisper_model": "base.en",
