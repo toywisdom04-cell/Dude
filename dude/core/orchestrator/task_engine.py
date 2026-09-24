@@ -1169,6 +1169,8 @@ class TaskEngine:
     
     def _required_perception_level(self):
         """Determine required perception level for current action."""
+        if self._task_state is None:
+            return PerceptionLevel.LEVEL_2_UIA_TREE
         action = self._task_state.last_action
         if not action:
             return PerceptionLevel.LEVEL_2_UIA_TREE

@@ -1944,6 +1944,14 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
             
             # 1. UNDERSTAND: Use IntelligenceRouter to understand goal and create plan
             # The router observes live perception, inspects capabilities, reasons about strategy
+            # The engine may hold no state yet (first task since boot): seed it
+            # so routing, planning and level selection never touch None.
+            if getattr(task_engine, '_task_state', None) is None:
+                try:
+                    from .state import TaskState
+                    task_engine._task_state = TaskState(goal=text)
+                except Exception as e:
+                    log.warning(f"task state seed failed: {e}")
             if hasattr(task_engine, 'intelligence_router') and task_engine.intelligence_router:
                 perception = task_engine.perception.observe(
                     task_engine._required_perception_level(),
@@ -2057,8 +2065,9 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
             perception = None
             if capability_bus is not None and capability_bus.perception:
                 try:
+                    from .state import PerceptionLevel
                     perception = capability_bus.perception.observe(
-                        level=2,  # UIA tree + window info
+                        required_level=PerceptionLevel.LEVEL_2_UIA_TREE,
                         force_refresh=True
                     )
                 except Exception as e:

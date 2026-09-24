@@ -495,74 +495,74 @@ class CognitiveFrontDoor:
                 confidence=0.4,
             )
 
-        def _translate_routing_result(self, routing_result, context: Dict[str, Any]) -> CognitiveInterpretation:
-            """Translate IntelligenceRouter RoutingResult to CognitiveInterpretation."""
-            decision = routing_result.decision
+    def _translate_routing_result(self, routing_result, context: Dict[str, Any]) -> CognitiveInterpretation:
+        """Translate IntelligenceRouter RoutingResult to CognitiveInterpretation."""
+        decision = routing_result.decision
             
-            # Map routing decisions to cognitive modes
-            if decision == RouteDecision.DETERMINISTIC_SKILL:
-                            return CognitiveInterpretation(
-                intent_kind=CognitiveMode.COMPUTER_WORK,
-                user_goal=context["transcript"],
-                desired_outcome="execute deterministic skill",
-                requires_computer_action=True,
-                required_capabilities=["ui_click", "type_text", "open_app"],
-                confidence=routing_result.confidence,
-                execution_plan=routing_result.plan,
-            )
-            
-            elif decision == RouteDecision.VERIFIED_PROCEDURE:
-                            return CognitiveInterpretation(
-                intent_kind=CognitiveMode.COMPUTER_WORK,
-                user_goal=context["transcript"],
-                desired_outcome="execute verified procedure",
-                requires_computer_action=True,
-                required_capabilities=["ui_click", "type_text", "open_app"],
-                confidence=routing_result.confidence,
-                execution_plan=routing_result.plan,
-            )
-            
-            elif decision == RouteDecision.LOCAL_REASONING:
-                            return CognitiveInterpretation(
-                intent_kind=CognitiveMode.COMPUTER_WORK,
-                user_goal=context["transcript"],
-                desired_outcome="execute planned computer work",
-                requires_computer_action=True,
-                required_capabilities=["ui_click", "type_text", "open_app"],
-                confidence=routing_result.confidence,
-                execution_plan=routing_result.plan,
-            )
-            
-            elif decision == RouteDecision.MODEL_FALLBACK:
-                            return CognitiveInterpretation(
-                intent_kind=CognitiveMode.COMPUTER_WORK,
-                user_goal=context["transcript"],
-                desired_outcome="execute planned computer work",
-                requires_computer_action=True,
-                required_capabilities=["ui_click", "type_text", "open_app"],
-                confidence=routing_result.confidence,
-                execution_plan=routing_result.plan,
-            )
-            
-            elif decision == RouteDecision.NO_SOLUTION:
-                            return CognitiveInterpretation(
-                intent_kind=CognitiveMode.NEEDS_CLARIFICATION,
-                user_goal=context["transcript"],
-                desired_outcome="clarify user intent",
-                requires_computer_action=False,
-                required_capabilities=[],
-                confidence=0.2,
-            )
-            
-            # Default fallback
-            return CognitiveInterpretation(
+        # Map routing decisions to cognitive modes
+        if decision == RouteDecision.DETERMINISTIC_SKILL:
+                        return CognitiveInterpretation(
             intent_kind=CognitiveMode.COMPUTER_WORK,
             user_goal=context["transcript"],
-            desired_outcome="execute user's request on computer",
+            desired_outcome="execute deterministic skill",
             requires_computer_action=True,
             required_capabilities=["ui_click", "type_text", "open_app"],
-            confidence=0.4,
-            )
+            confidence=routing_result.confidence,
+            execution_plan=routing_result.plan,
+        )
+            
+        elif decision == RouteDecision.VERIFIED_PROCEDURE:
+                        return CognitiveInterpretation(
+            intent_kind=CognitiveMode.COMPUTER_WORK,
+            user_goal=context["transcript"],
+            desired_outcome="execute verified procedure",
+            requires_computer_action=True,
+            required_capabilities=["ui_click", "type_text", "open_app"],
+            confidence=routing_result.confidence,
+            execution_plan=routing_result.plan,
+        )
+            
+        elif decision == RouteDecision.LOCAL_REASONING:
+                        return CognitiveInterpretation(
+            intent_kind=CognitiveMode.COMPUTER_WORK,
+            user_goal=context["transcript"],
+            desired_outcome="execute planned computer work",
+            requires_computer_action=True,
+            required_capabilities=["ui_click", "type_text", "open_app"],
+            confidence=routing_result.confidence,
+            execution_plan=routing_result.plan,
+        )
+            
+        elif decision == RouteDecision.MODEL_FALLBACK:
+                        return CognitiveInterpretation(
+            intent_kind=CognitiveMode.COMPUTER_WORK,
+            user_goal=context["transcript"],
+            desired_outcome="execute planned computer work",
+            requires_computer_action=True,
+            required_capabilities=["ui_click", "type_text", "open_app"],
+            confidence=routing_result.confidence,
+            execution_plan=routing_result.plan,
+        )
+            
+        elif decision == RouteDecision.NO_SOLUTION:
+                        return CognitiveInterpretation(
+            intent_kind=CognitiveMode.NEEDS_CLARIFICATION,
+            user_goal=context["transcript"],
+            desired_outcome="clarify user intent",
+            requires_computer_action=False,
+            required_capabilities=[],
+            confidence=0.2,
+        )
+            
+        # Default fallback
+        return CognitiveInterpretation(
+        intent_kind=CognitiveMode.COMPUTER_WORK,
+        user_goal=context["transcript"],
+        desired_outcome="execute user's request on computer",
+        requires_computer_action=True,
+        required_capabilities=["ui_click", "type_text", "open_app"],
+        confidence=0.4,
+        )
     
 
 
