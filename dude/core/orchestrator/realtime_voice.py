@@ -794,11 +794,77 @@ class RealtimeInteractionController:
 
     # ---------------- main entry: one finished utterance ----------------
 
+    def _is_addressed(self, text, source="voice") -> bool:
+        """True when this utterance is meant for DUDE (may interrupt).
+
+        Mirrors the ambient gate's addressing policy so the two can never
+        disagree: wake word, control/continuation turns, bare commands and
+        topic-continuous speech count; anything else is background audio
+        that must not preempt live speech.
+        """
+        from core.ambient import (DIRECTED_CUES, _CONTROL_RE,
+                                  _FILLER_PREFIX, _IMPERATIVE_VERB,
+                                  _TOPIC_STOP)
+        if source != "voice":
+            return True  # typed text is always deliberate
+        t = (text or "").strip()
+        if not t:
+            return False
+        if DIRECTED_CUES.search(t):
+            return True
+        low = t.lower()
+        if len(low.split()) <= 2 or _CONTROL_RE.search(low):
+            return True
+        core = _FILLER_PREFIX.sub("", low) or low
+        if _IMPERATIVE_VERB.match(t) or _IMPERATIVE_VERB.match(core):
+            return True
+        try:
+            recent = self.memory.recent_messages(limit=10) \
+                if self.memory is not None else []
+        except Exception:
+            return True
+        if not recent:
+            return True
+
+        def _cw(s):
+            out = set()
+            for w in re.findall(r"[a-z]{4,}", (s or "").lower()):
+                if w in _TOPIC_STOP:
+                    continue
+                if len(w) > 5 and w.endswith("s") and not w.endswith("ss"):
+                    w = w[:-1]
+                out.add(w)
+            return out
+
+        ctx_words = set()
+        for m in recent[-10:]:
+            try:
+                c = m.get("content") if isinstance(m, dict) else ""
+                ctx_words |= _cw(c)
+            except Exception:
+                continue
+        if not ctx_words:
+            return True
+        heard = _cw(t)
+        if not heard:
+            return True
+        need = 2 if len(heard) > 4 else 1
+        return len(heard & ctx_words) >= need
+
     def on_final_text(self, text: str, source: str = "voice",
                       speech_start: float = 0.0,
                       speech_end: float = 0.0) -> str:
         """Route one final user utterance. Returns the spoken reply."""
         entry_state = self.state
+        # Background speech must never preempt live audio: only an addressed
+        # utterance may bump the epoch or interrupt. Anything else is dropped
+        # BEFORE it can touch in-flight speech (previously every background
+        # transcript cut him off via the overlap path or the epoch bump).
+        if entry_state in (VoiceState.SPEAKING, VoiceState.EXECUTING_TASK) \
+                and not self._is_addressed(text, source=source):
+            log.info("OVERLAP_IGNORED (background during speech): %r",
+                     (text or "")[:80])
+            return ""
         with self._lock:
             self._turn_id += 1
             self._turn.turn_id = self._turn_id
