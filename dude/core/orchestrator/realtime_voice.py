@@ -1563,6 +1563,49 @@ class EarSTTBackend(STTBackend):
         return ""
 
 
+def _fresh_perception_block(perception) -> str:
+    """Compact render of a fresh engine snapshot for the answering prompt.
+
+    The door already fetches this every turn (force refresh); without this
+    the answer only ever sees the observer's cached snapshot, so a newly
+    popped app is invisible until the cache catches up.
+    """
+    if perception is None:
+        return ""
+    try:
+        parts = []
+        app = str(getattr(perception, "active_app", "") or "").strip()
+        if app and app != "unknown":
+            parts.append(f"Foreground app RIGHT NOW: {app}")
+        win = getattr(perception, "active_window", {}) or {}
+        if isinstance(win, dict):
+            title = str(win.get("title", "") or "").strip()
+            if title:
+                parts.append(f"Foreground window: {title[:120]}")
+        foc = getattr(perception, "focused_control", None)
+        if foc is not None:
+            parts.append("Focused control: %s" % str(
+                getattr(foc, "name", foc))[:100])
+        ctrls = getattr(perception, "controls", None) or []
+        names = []
+        for c in ctrls[:12]:
+            n = str(getattr(c, "name", "") or "").strip()
+            t = str(getattr(c, "control_type", "") or
+                    getattr(c, "ctype", "") or "").strip()
+            if n:
+                names.append(f"{n} ({t})" if t else n)
+        if names:
+            parts.append("On-screen controls: " + "; ".join(names)[:400])
+        ocr = " ".join(str(getattr(perception, "ocr_text", "") or "").split())
+        if ocr:
+            parts.append("Fresh on-screen text: " + ocr[:300])
+        if getattr(perception, "change_detected", False):
+            parts.append("(screen changed just now)")
+        return "\n".join(parts)
+    except Exception:
+        return ""
+
+
 def build_live_context(observer, task_ctx=None, active_task_id=""):
     """ONE authoritative live-context snapshot (shared semantic bus).
 
@@ -1689,6 +1732,13 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 return ctl._epoch != my_epoch
 
         sys_extra = _screen()
+        # Fresh engine snapshot (taken for THIS turn) outranks everything
+        # cached below it — app identity, fresh controls, latest change.
+        _fresh = ctx.get("fresh_perception_block") or ""
+        if _fresh:
+            sys_extra = ("FRESH LIVE PERCEPTION (taken for THIS turn — this "
+                         "overrides anything older below):\n" + _fresh +
+                         "\n\n" + sys_extra)
         # Context isolation: the CURRENT REQUEST outranks everything older.
         # History/memory stay available for genuinely relevant recall, but no
         # stale task may override what the user just asked.
@@ -2090,6 +2140,15 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 "interrupt_brief": ctx.get("interrupt_brief", ""),
                 "fast": ctx.get("fast", False),
             }
+            # Carry the ALREADY-FRESH engine snapshot into the answering
+            # turn as well: otherwise a newly popped app is invisible to
+            # the answer until the observer cache catches up.
+            try:
+                _fb = _fresh_perception_block(perception)
+                if _fb:
+                    ctx["fresh_perception_block"] = _fb
+            except Exception:
+                pass
             
             # Process through cognitive front door
             interpretation = cognitive_front_door.process_turn(
