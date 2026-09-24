@@ -2140,6 +2140,33 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 "interrupt_brief": ctx.get("interrupt_brief", ""),
                 "fast": ctx.get("fast", False),
             }
+            # App-switch detection: if the fresh engine snapshot names a
+            # different foreground app than the observer cache, the cached
+            # screen text/description belongs to the PREVIOUS app and any
+            # answer from it describes the wrong screen. Refresh
+            # synchronously (bounded) so THIS turn sees the new screen.
+            # Non-switch turns pay nothing and stay fast.
+            try:
+                _fresh_app = (str(getattr(perception, "active_app", "") or "")
+                              if perception is not None else "")
+                _cached_app = ""
+                if observer is not None:
+                    try:
+                        _cs = observer.current_screen() or {}
+                        _cached_app = str(_cs.get("app", "") or "")
+                    except Exception:
+                        pass
+                if (_fresh_app and _cached_app
+                        and _fresh_app.lower() != _cached_app.lower()):
+                    log.info("SCREEN_CHANGED %r -> %r, forcing fresh snapshot",
+                             _cached_app, _fresh_app)
+                    if observer is not None:
+                        _rt2 = threading.Thread(
+                            target=observer.refresh_snapshot, daemon=True)
+                        _rt2.start()
+                        _rt2.join(timeout=4.0)
+            except Exception as e:
+                log.warning(f"screen-change refresh failed: {e}")
             # Carry the ALREADY-FRESH engine snapshot into the answering
             # turn as well: otherwise a newly popped app is invisible to
             # the answer until the observer cache catches up.
