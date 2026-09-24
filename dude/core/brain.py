@@ -513,9 +513,12 @@ class Brain:
             base = system_prompt()
         if history:
             base = base + ("\n\nCONVERSATION: read the recent history above carefully. "
-                           "A new short request nearly always continues the same ongoing "
-                           "task or topic — connect it to your previous commands and answers, "
-                           "and use recall_about_user for older context when it would help.")
+                           "Continue the same ongoing task or topic ONLY when the new "
+                           "request clearly refers to it. Greetings, acknowledgments "
+                           "('thanks', 'okay', 'hey dude'), and new topics stand "
+                           "alone — never drag old tasks, problems, or past topics "
+                           "into them, and never monologue unprompted about them. "
+                           "A casual check-in gets exactly one short sentence back.")
         if system_extra:
             base = base + "\n\n" + system_extra
         if fast:

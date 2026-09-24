@@ -1708,7 +1708,7 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
     def _deep(text: str, ctx) -> DeepResult:
         fast = bool(ctx.get("fast"))
         # Hop budget by complexity: fast action (3), short conversational
-        # chat (6), deep task (configured, default 10).
+        # chat (10), deep task (configured, default 10).
         low_m = re.sub(r"^(hey|hi|hello|dude|computer|assistant)[,.\s]+",
                        "", (text or "").strip().lower())
         if fast:
@@ -1732,10 +1732,22 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                 return ctl._epoch != my_epoch
 
         sys_extra = _screen()
+        # Casual check-ins ("hey dude", "thanks", "okay") get exactly one
+        # short sentence and no raised topics: short, no question, no
+        # request. Anything substantive flows normally with full context.
+        _tl = (text or "").strip()
+        if len(_tl.split()) < 4 and "?" not in _tl:
+            sys_extra += ("\n\nTHIS TURN IS A CASUAL CHECK-IN: reply in exactly "
+                          "ONE short sentence (a greeting or acknowledgment). "
+                          "Do NOT raise past tasks, problems, memories, or any "
+                          "other topic.")
+            _skip_memory = True
+        else:
+            _skip_memory = False
         # Fresh engine snapshot (taken for THIS turn) outranks everything
         # cached below it — app identity, fresh controls, latest change.
         _fresh = ctx.get("fresh_perception_block") or ""
-        if _fresh:
+        if _fresh and not _skip_memory:
             sys_extra = ("FRESH LIVE PERCEPTION (taken for THIS turn — this "
                          "overrides anything older below):\n" + _fresh +
                          "\n\n" + sys_extra)
@@ -1748,7 +1760,7 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         if ibrief:
             sys_extra += ibrief
         uia_view = ctx.get("uia_view") or ""
-        if not uia_view:
+        if not uia_view and not _skip_memory:
             # Cached UIA rows (microseconds, no screenshot): attach the live
             # control map to EVERY conversational turn so answers name real
             # buttons/fields/focus instead of guessing.
@@ -1769,44 +1781,48 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         # facts, but the model also needs records matching THIS question —
         # otherwise it answers as if it remembers nothing about the user's
         # work. Keyword recall over facts + conversation (no embeddings).
-        try:
-            if memory is not None:
-                import re as _re3
-                _stop = frozenset(
-                    "what when where which while with have has this that "
-                    "from they them then than there here your youre about "
-                    "dude hey please tell show give doing work working sir "
-                    "just like really very going know think will would can "
-                    "could does did are were was been being".split())
-                keys = [w for w in _re3.findall(r"[a-z]{4,}",
-                                                (text or "").lower())
-                        if w not in _STOP][:6]
-                mem_bits = []
-                for k in keys:
-                    try:
-                        for f in (memory.recall_facts(query=k, limit=3) or []):
-                            f = str(f)[:200]
-                            if f and f not in mem_bits:
-                                mem_bits.append(f)
-                    except Exception:
-                        pass
-                    try:
-                        for m in (memory.search_messages(query=k, limit=3) or []):
-                            c = (m.get("content") if isinstance(m, dict) else "")
-                            c = " ".join(str(c or "").split())[:200]
-                            if c and c not in mem_bits:
-                                mem_bits.append(c)
-                    except Exception:
-                        pass
-                if mem_bits:
-                    sys_extra += ("\n\nRELEVANT MEMORY (your own records — "
-                                  "speak from these first; never claim memory "
-                                  "loss when the answer is here):\n" +
-                                  "\n".join("- " + b for b in mem_bits[:8]))
-                    log.info("MEMORY_INJECT bits=%d keys=%s", len(mem_bits),
-                             ",".join(keys))
-        except Exception as e:
-            log.warning(f"memory recall injection failed: {e}")
+        # Skipped for casual check-ins (nothing to recall for "hey dude").
+        if _skip_memory:
+            log.info("MEMORY_INJECT skipped (casual check-in)")
+        else:
+            try:
+                if memory is not None:
+                    import re as _re3
+                    _stop = frozenset(
+                        "what when where which while with have has this that "
+                        "from they them then than there here your youre about "
+                        "dude hey please tell show give doing work working sir "
+                        "just like really very going know think will would can "
+                        "could does did are were was been being".split())
+                    keys = [w for w in _re3.findall(r"[a-z]{4,}",
+                                                    (text or "").lower())
+                            if w not in _stop][:6]
+                    mem_bits = []
+                    for k in keys:
+                        try:
+                            for f in (memory.recall_facts(query=k, limit=3) or []):
+                                f = str(f)[:200]
+                                if f and f not in mem_bits:
+                                    mem_bits.append(f)
+                        except Exception:
+                            pass
+                        try:
+                            for m in (memory.search_messages(query=k, limit=3) or []):
+                                c = (m.get("content") if isinstance(m, dict) else "")
+                                c = " ".join(str(c or "").split())[:200]
+                                if c and c not in mem_bits:
+                                    mem_bits.append(c)
+                        except Exception:
+                            pass
+                    if mem_bits:
+                        sys_extra += ("\n\nRELEVANT MEMORY (your own records — "
+                                      "speak from these first; never claim memory "
+                                      "loss when the answer is here):\n" +
+                                      "\n".join("- " + b for b in mem_bits[:8]))
+                        log.info("MEMORY_INJECT bits=%d keys=%s", len(mem_bits),
+                                 ",".join(keys))
+            except Exception as e:
+                log.warning(f"memory recall injection failed: {e}")
         collected: list = []
         buf = {"s": ""}
         first = {"done": False}
