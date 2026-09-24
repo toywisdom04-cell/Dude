@@ -2175,6 +2175,14 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         try:
             if getattr(task_engine, '_running', False):
                 return DeepResult(speech_reply="Already working on something. Say 'stop' to switch.", task_id="", long_running=False)
+            # Same seeding as _run_cognitive_task: first task since boot has
+            # no state yet; planning must never touch None.
+            if getattr(task_engine, '_task_state', None) is None:
+                try:
+                    from .state import TaskState
+                    task_engine._task_state = TaskState(goal=text)
+                except Exception as e:
+                    log.warning(f"task state seed failed: {e}")
             task_engine._task_state.subgoals = plan.steps if plan else []
             task_engine._task_state.pending_steps = list(task_engine._task_state.subgoals)
             task_engine._task_state.current_step = 0
