@@ -1280,6 +1280,10 @@ def run_agent(args):
                 except Exception as e:
                     log.warning(f"realtime voice wiring failed (legacy voice kept): {e}")
                     realtime_voice_ctl = None
+            else:
+                log.warning("realtime voice loop OFF (legacy voice): set "
+                            "voice.realtime_loop=true in config.json or "
+                            "DUDE_VOICE_REALTIME_LOOP=1 to enable")
         except Exception as e:
             log.exception("Failed to initialize orchestrator, falling back to legacy path")
             _orchestrator = None
