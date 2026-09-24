@@ -1601,6 +1601,13 @@ def build_live_context(observer, task_ctx=None, active_task_id=""):
         if tctx.get("correction"):
             parts.append("Latest user correction: " +
                          str(tctx["correction"])[:160])
+    # Last task outcome (incl. failure detail): without this the model can
+    # only say "I couldn't finish it" when asked what went wrong. Bounded.
+    _outcome = str(tctx.get("last_task_outcome", "") or "")
+    _detail = str(tctx.get("last_task_detail", "") or "")
+    if _outcome and _outcome.lower() not in ("done", ""):
+        parts.append("Last task outcome: " + _outcome[:80] +
+                     (": " + _detail[:160] if _detail else ""))
     if not parts:
         return ""
     return "LIVE PERCEPTION (real sensor evidence):\n" + "\n".join(parts)
@@ -1979,6 +1986,18 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                     summary = f"Done. Completed {len(completed)} steps"
                 else:
                     summary = "I couldn't finish that one, sir."
+                    # Leave the reason where the next turn can see it, so a
+                    # direct "what went wrong?" gets a real answer instead of
+                    # another one-liner. Bounded, best effort.
+                    try:
+                        with ctl._lock:
+                            _tctx = ctl._turn.task_context
+                            _tctx["last_task_outcome"] = "not verified"
+                            _tctx["last_task_detail"] = str(
+                                task_state.failure_reason or
+                                f"{len(failed)} steps had issues")[:160]
+                    except Exception:
+                        pass
             else:
                 summary = "Task completed."
             
@@ -2151,6 +2170,18 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
                     summary = f"Done. Completed {len(completed)} steps"
                 else:
                     summary = "I couldn't finish that one, sir."
+                    # Leave the reason where the next turn can see it, so a
+                    # direct "what went wrong?" gets a real answer instead of
+                    # another one-liner. Bounded, best effort.
+                    try:
+                        with ctl._lock:
+                            _tctx = ctl._turn.task_context
+                            _tctx["last_task_outcome"] = "not verified"
+                            _tctx["last_task_detail"] = str(
+                                task_state.failure_reason or
+                                f"{len(failed)} steps had issues")[:160]
+                    except Exception:
+                        pass
             else:
                 summary = "Task completed."
             task_id = getattr(task_state, 'task_id', '') if task_state else ''

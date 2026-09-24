@@ -1876,6 +1876,8 @@ def run_agent(args):
                         _tctx.pop("current_step", None)
                         _tctx["last_task_outcome"] = (
                             "done" if gs.get("verify_ok") else "not verified")
+                        _tctx["last_task_detail"] = str(
+                            gs.get("failure", "") or "")[:160]
                 except Exception:
                     pass
                 try:
