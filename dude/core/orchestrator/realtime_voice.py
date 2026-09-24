@@ -1698,6 +1698,18 @@ def wire_realtime_voice(*, voice, ear, memory, brain,
         if ibrief:
             sys_extra += ibrief
         uia_view = ctx.get("uia_view") or ""
+        if not uia_view:
+            # Cached UIA rows (microseconds, no screenshot): attach the live
+            # control map to EVERY conversational turn so answers name real
+            # buttons/fields/focus instead of guessing.
+            try:
+                _sb = (capability_bus.screentree
+                       if capability_bus is not None else None)
+                if _sb is not None:
+                    uia_view = _sb.current_view(limit=12) or ""
+            except Exception as e:
+                log.warning(f"UI map attach failed: {e}")
+                uia_view = ""
         if uia_view:
             sys_extra += ("\n\nLIVE UI MAP (controls actually on screen right "
                           "now — buttons, fields, focused control, cursor "

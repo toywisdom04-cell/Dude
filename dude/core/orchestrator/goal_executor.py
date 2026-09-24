@@ -545,10 +545,16 @@ class CognitiveFrontDoor:
         )
             
         elif decision == RouteDecision.NO_SOLUTION:
+            # No computer work can be planned — but that does NOT mean the
+            # user said nothing. Chatter, questions (including screen
+            # questions), and vague remarks all belong to the conversational
+            # brain, which answers from live context and memory and asks
+            # naturally when something is genuinely unclear. A canned
+            # "could you clarify" is the last resort, never the default.
                         return CognitiveInterpretation(
-            intent_kind=CognitiveMode.NEEDS_CLARIFICATION,
+            intent_kind=CognitiveMode.CONVERSE,
             user_goal=context["transcript"],
-            desired_outcome="clarify user intent",
+            desired_outcome="respond conversationally",
             requires_computer_action=False,
             required_capabilities=[],
             confidence=0.2,
