@@ -1,0 +1,39 @@
+{
+  "id": "sp.document_reporting",
+  "name": "Document & Report Production",
+  "version": "1.0",
+  "domain": "knowledge-work",
+  "purpose": "Turn source material into a finished, checked document or report the user can trust.",
+  "summary": "Work knowledge for preparing structured documents: gather the source material, follow the structure the user already uses, compute what the document claims, then verify before handing it over.",
+  "applicable_context": [
+    "preparing a report or summary from source data",
+    "producing a document for delivery or review",
+    "repeating a recurring reporting job"
+  ],
+  "knowledge": [
+    "locate and read the source material before writing anything",
+    "identify the reporting period, audience, and required sections",
+    "follow the structure of an existing template when the user has one",
+    "derive every number in the document from a source, never from memory",
+    "compute aggregates with a checkable method and record the method",
+    "keep the document's claims consistent with the underlying data",
+    "preserve the user's existing naming and formatting conventions"
+  ],
+  "prerequisites": [
+    "the source material is available and readable",
+    "the destination format or template is known or discoverable"
+  ],
+  "useful_capabilities": ["read_file", "write_file", "list_directory"],
+  "verification_guidance": [
+    "re-read the finished document and confirm each required section exists",
+    "verify totals and key figures against the source data",
+    "confirm the saved artifact exists at the intended path"
+  ],
+  "recovery_guidance": [
+    "if a figure cannot be traced to a source, remove it rather than guess",
+    "if the template conflicts with the requested structure, follow the request",
+    "re-open the saved file to confirm the write actually landed"
+  ],
+  "provenance": "sample:dude.phase17",
+  "enabled": true
+}

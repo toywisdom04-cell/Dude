@@ -1,0 +1,38 @@
+{
+  "id": "sp.file_organization",
+  "name": "File Organization & Housekeeping",
+  "version": "1.0",
+  "domain": "computer-work",
+  "purpose": "Organize files into a structure the user finds natural, without destroying or moving anything they did not ask about.",
+  "summary": "Work knowledge for tidying a working folder: learn the existing convention first, propose a structure that matches it, move only what was asked, and prove the result is intact.",
+  "applicable_context": [
+    "tidying or sorting a working folder",
+    "setting up a repeatable folder structure",
+    "renaming or relocating files as part of larger work"
+  ],
+  "knowledge": [
+    "inspect the existing folder layout before deciding on a structure",
+    "infer the user's naming and grouping convention and follow it",
+    "plan the whole move set first, then apply it",
+    "never move, rename, or delete files outside the requested scope",
+    "avoid names that are illegal or awkward on the target filesystem",
+    "keep related files together rather than flattening everything"
+  ],
+  "prerequisites": [
+    "the target folder is known",
+    "the scope of what may be moved is agreed"
+  ],
+  "useful_capabilities": ["list_directory", "read_file", "create_folder"],
+  "verification_guidance": [
+    "confirm each intended file exists at its new path",
+    "confirm nothing was lost by comparing counts before and after",
+    "confirm the resulting structure matches the plan"
+  ],
+  "recovery_guidance": [
+    "if a move fails partway, stop and report which items landed where",
+    "never overwrite an existing file during reorganization",
+    "if the convention is unclear, keep the current layout and ask"
+  ],
+  "provenance": "sample:dude.phase17",
+  "enabled": true
+}

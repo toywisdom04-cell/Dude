@@ -1,0 +1,27 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260924113635
+Username: RK_DUVVURI\duvvu
+RunAs User: RK_DUVVURI\duvvu
+Configuration Name: 
+Machine: RK_DUVVURI (Microsoft Windows NT 10.0.26200.0)
+Host Application: powershell -NoProfile -Command Start-Transcript -Path 'E:\Dude\dude\workflows\powershell_transcript.log' -Append; Write-Host 'Transcript logging started. Terminal output will now be captured automatically.'; function Enable-PSTranscript { Start-Transcript -Path 'E:\Dude\dude\workflows\powershell_transcript.log' -Append } ; Write-Host 'Tip: Run Enable-PSTranscript at any time to log terminal output for me to read.'
+Process ID: 25156
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is E:\Dude\dude\workflows\powershell_transcript.log
+Transcript logging started. Terminal output will now be captured automatically.
+Tip: Run Enable-PSTranscript at any time to log terminal output for me to read.
+PS>$global:?
+True
+**********************
+Windows PowerShell transcript end
+End time: 20260924113635
+**********************

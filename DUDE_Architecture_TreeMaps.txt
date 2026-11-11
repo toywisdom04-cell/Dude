@@ -1,0 +1,350 @@
+================================================================================
+                          DUDE ARCHITECTURE TREE MAPS
+================================================================================
+File: E:\Dude\dude\dude.py
+Generated: 2026-11-11
+
+This document contains two tree maps:
+  1. DUDE Architecture Flowchart (System Design)
+  2. DUDE Working Architecture (Runtime Components)
+
+Both maps reflect all fixes applied:
+  - Voice sensitivity: VAD aggressiveness 3->1, mic_gain 3->5
+  - Barge-in: enabled, fixed gen NameError bug
+  - Greeting: boot_greeting() called, include_memory=false
+  - open_app: verification_method=WINDOW_APPEARED, bring_to_foreground
+  - Stability: disable_action_fence=true, disable_health_checks=true
+
+================================================================================
+TREE MAP 1: DUDE ARCHITECTURE FLOWCHART (System Design)
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        STARTUP LAYER                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+    dude.py main()
+          │
+          ▼
+    config.local.json load
+          │
+          ▼
+    Acquire instance lock
+          │
+          ▼
+    Memory initialize (SQLite)
+          │
+          ▼
+    Install core doctrines (CORE_IDENTITY)
+          │
+          ▼
+    Voice engine (edge-tts AndrewNeural)
+          │
+          ▼
+    Realtime voice controller
+          │
+          ▼
+    Boot greeting: "Good evening sir. Dude is online."
+          │
+          ▼
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        INPUT LAYER - VOICE / STT                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+    Realtime voice controller
+          │
+          ▼
+    Ear mic capture (Device 1, RawInputStream)
+          │
+          ▼
+    WebRTC VAD (aggressiveness=1, min_rms=0.005)
+          │
+          ▼
+    STT Whisper (base.en)
+          │
+          ▼
+    Wake word gate ("dude")
+          │
+          ▼
+    on_final_text(user_text)
+          │
+          ▼
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        BRAIN LAYER - REASONING                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+    on_final_text
+          │
+          ▼
+    Cognitive front door
+          │
+          ▼
+    Local casual reply check?
+    ├─ YES ──► Direct reply (speak immediately)
+    │
+    └─ NO  ──► Intelligence router
+                  │
+                  ▼
+            Provider iteration
+            ├─ OpenRouter
+            ├─ Ollama (llama3.2:3b, qwen2.5vl:7b)
+            ├─ Groq
+            ├─ Claude / 9router / Codestral
+            └─ Gemini / Empiriolabs / Naravision
+                  │
+                  ▼
+            Brain.chat()
+                  │
+                  ▼
+            _plan_action()  [task_engine.py]
+                  │
+                  ▼
+            TaskEngine action planning
+                  │
+                  ▼
+            subgoal.verification_method = WINDOW_APPEARED
+                  │
+                  ▼
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        ACTION LAYER - EXECUTION                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+    TaskEngine action planning
+          │
+          ▼
+    Action type: open_app / open_url / click / scroll / type
+          │
+          ▼
+    AppInstanceManager resolve executable
+          │
+          ▼
+    bring_to_foreground() window focus
+          │
+          ▼
+    Verification check (WINDOW_APPEARED)
+          │
+          ▼
+    Action complete / feedback
+          │
+          ▼
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        OUTPUT LAYER - TTS                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+    Verification result
+          │
+          ▼
+    Voice synthesize (edge-tts, +8% rate)
+          │
+          ▼
+    Playback audio (Output device 8)
+          │
+          ▼
+    Barge-in detection during playback
+          │
+          ▼
+    User speaks over DUDE ──► signal_user_speech()
+          │
+          ▼
+    TTS.stop() interrupted
+          │
+          ▼
+    _was_interrupted = True
+          │
+          ▼
+    VoiceState.INTERRUPTED
+          │
+          ▼
+    Return to listening state
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        MEMORY LAYER                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+    Memory (SQLite DB at E:\Dude\dude\data\)
+          │
+          ├─ recall_facts(query, limit=4)
+          ├─ facts_by_category("CORE_IDENTITY", 30)
+          ├─ install_doctrine(text)
+          ├─ remember_fact(fact, category)
+          ├─ get_state(key) / set_state(key, value)
+          ├─ wizard_done flag
+          └─ user_title state
+          │
+          ▼
+    Memory injected into screen_extra (MEMORY LINK block)
+    Memory injected into brain context
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        MONITORING & HEALTH                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+    Runtime health supervisor
+          │
+          ▼
+    Capability bus
+          │
+          ▼
+    Provider cooldowns (30s, 60s, 180s, 300s)
+          │
+          ▼
+    disable_runtime_health_checks=true
+    disable_action_fence=true
+          │
+          ▼
+    Health notices (never spoken aloud)
+
+================================================================================
+TREE MAP 2: DUDE WORKING ARCHITECTURE (RUNTIME COMPONENTS)
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            USER & ENVIRONMENT                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+    User Voice / Text input
+          │
+    Windows desktop screen / UI
+          │
+    External apps: WhatsApp, Browser, Calculator, etc.
+
+================================================================================
+DUDE APPLICATION (E:\Dude\dude\dude.py)
+================================================================================
+
+    ENTRY POINT
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  main()                                                             │
+    │  └─ run_agent(args)                                                 │
+    │       └─ acquire_instance_lock()  (prevents double launch)          │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    CONFIGURATION (config.local.json)
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  ear:                                                       │
+    │    mic_gain = 5.0                                          │
+    │    vad_min_rms = 0.005                                     │
+    │    vad_aggressiveness = 1                                  │
+    │    min_utt_rms = 0.008                                     │
+    │    barge_in = true                                         │
+    │                                                            │
+    │  greeting:                                                 │
+    │    include_memory = false                                  │
+    │                                                            │
+    │  hand.enabled = false                                      │
+    │  screentree.continuous_scan = false                        │
+    │  disable_action_fence = true (orchestrator)                │
+    │  disable_runtime_health_checks = true (orchestrator)       │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    MEMORY SUBSYSTEM
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  Memory (SQLite)                                                    │
+    │    ├─ recall_facts(q, limit=4)                                      │
+    │    ├─ facts_by_category("CORE_IDENTITY", 30)                        │
+    │    ├─ install_doctrine(text)                                        │
+    │    ├─ remember_fact(fact, category)                                 │
+    │    ├─ get_state(key) / set_state(key, val)                          │
+    │    ├─ wizard_done flag                                              │
+    │    └─ user_title state ("sir")                                      │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    VOICE SUBSYSTEM
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  Voice Engine (edge-tts, en-US-AndrewMultilingualNeural, +8%)       │
+    │    ├─ TTS queue worker                                              │
+    │    ├─ interrupt() / stop()                                          │
+    │    ├─ _was_interrupted flag                                         │
+    │    └─ VoiceState: SPEAKING / INTERRUPTED / IDLE                     │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    EAR SUBSYSTEM
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  RawInputStream (Mic Device 1)                                      │
+    │    ├─ WebRTC VAD (aggressiveness=1)                                 │
+    │    ├─ min_rms = 0.005                                               │
+    │    ├─ STT Whisper (base.en)                                         │
+    │    ├─ on_barge_in callback                                          │
+    │    └─ voiced_run >= 4 threshold                                     │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    ORCHESTRATOR CORE
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  RealtimeInteractionController                                      │
+    │    ├─ signal_user_speech()  [barge-in detection]                    │
+    │    ├─ _begin_interruption(text, source)                             │
+    │    ├─ merge_correction_and_replan()                                 │
+    │    ├─ handle_text(user_text, source)                                │
+    │    ├─ _fast_reply(text)                                             │
+    │    ├─ _handle_deep(text)                                            │
+    │    ├─ _handle_stop(text)                                            │
+    │    └─ VoiceEngineAdapter (wraps Voice)                              │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    BRAIN & INTELLIGENCE
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  IntelligenceRouter                                                 │
+    │    ├─ Brain.chat()                                                  │
+    │    ├─ Providers: OpenRouter, Ollama, Groq, Claude, 9router          │
+    │    ├─ Local fallback response (when all providers fail)             │
+    │    └─ _plan_action(subgoal)  [task_engine.py]                       │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    ACTION EXECUTION
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  TaskEngine._plan_action                                            │
+    │    ├─ AppInstanceManager resolve executable                         │
+    │    ├─ bring_to_foreground() window focus                            │
+    │    ├─ subgoal.verification_method = WINDOW_APPEARED                 │
+    │    ├─ Verification engine                                           │
+    │    └─ open_app / open_url / click / scroll / type                   │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    PERCEPTION & SCREEN
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  Observer / Screentree                                              │
+    │    ├─ UI Automation Control Map                                     │
+    │    ├─ PerceptionEngine                                              │
+    │    └─ VisualStateBus                                                │
+    └─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+    HEALTH & MONITORING
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  Runtime Health Supervisor                                          │
+    │    ├─ Capability Bus                                                │
+    │    ├─ Provider cooldowns                                            │
+    │    └─ Health notices (never spoken aloud)                           │
+    └─────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+DATA FLOW SUMMARY
+================================================================================
+
+1.  USER SPEAKS ──► Ear mic ──► WebRTC VAD ──► STT Whisper ──► "dude" wake gate
+2.  Wake confirmed ──► handle_text() ──► Cognitive front door
+3.  Casual question ──► Direct reply ──► TTS speak ──► User hears
+4.  Complex task ──► Intelligence router ──► Provider API ──► Brain response
+5.  Action needed ──► _plan_action() ──► AppInstanceManager ──► Execute
+6.  Window appears ──► verification_method=WINDOW_APPEARED ──► Confirm
+7.  Result spoken ──► edge-tts ──► Audio output ──► User hears
+8.  User interrupts ──► signal_user_speech() ──► TTS.stop() ──► _was_interrupted
+9.  Memory injected ──► recall_facts() ──► screen_extra ──► Brain context
+
+================================================================================
+STARTUP METHODS (all use same fixed dude.py)
+================================================================================
+
+    Desktop icon shortcut ──► python "E:\Dude\dude\dude.py"
+    Windows autostart   ──► pythonw "E:\Dude\dude\dude.py" --install-startup
+    Manual launch       ──► python "E:\Dude\dude\dude.py"
+
+All three entry points execute the identical dude.py with all fixes applied.
+
+================================================================================
+END OF DOCUMENT
+================================================================================

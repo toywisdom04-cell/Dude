@@ -1,0 +1,226 @@
+2026-08-26 13:58:51,607 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2026-08-26 13:58:53,882 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 13:58:55,504 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 14:54:50,098 httpx INFO: HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-08-26 14:54:50,393 httpx INFO: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-08-26 14:54:50,687 httpx INFO: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/tree/3d3d5dee26484f91867d81cb899cfcf72b96be6c?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,123 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 14:54:51,149 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,183 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 14:54:51,183 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,184 huggingface_hub.utils._http WARNING: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-08-26 14:54:51,196 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 14:54:51,216 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,224 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,252 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 200 OK"
+2026-08-26 14:54:51,255 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 14:55:37,309 faster_whisper INFO: Processing audio with duration 00:06.000
+2026-08-26 22:14:42,191 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:15:24,680 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:15:53,745 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:16:00,016 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:16:06,374 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:16:40,913 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:16:45,016 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:17:28,683 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:17:39,019 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:18:13,438 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:29:01,334 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:29:42,692 httpx INFO: HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-08-26 22:29:42,953 httpx INFO: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,205 httpx INFO: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/tree/3d3d5dee26484f91867d81cb899cfcf72b96be6c?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,539 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 22:29:43,540 huggingface_hub.utils._http WARNING: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-08-26 22:29:43,572 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,597 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 22:29:43,604 httpx INFO: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 22:29:43,606 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/config.json "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,624 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,632 httpx INFO: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,658 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 22:29:43,671 httpx INFO: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base.en/3d3d5dee26484f91867d81cb899cfcf72b96be6c/vocabulary.txt "HTTP/1.1 200 OK"
+2026-08-26 22:30:26,174 faster_whisper INFO: Processing audio with duration 00:06.000
+2026-08-26 22:31:05,081 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 502 Bad Gateway"
+2026-08-26 22:31:09,874 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2026-08-26 22:31:12,059 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:31:58,239 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:32:24,863 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:32:26,641 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:08,843 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:29,691 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:30,787 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:42,704 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:52,727 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:35:53,953 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:36:14,871 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:36:16,578 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:36:29,304 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:36:30,637 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:45:41,685 httpx INFO: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-08-26 22:45:42,352 faster_whisper INFO: Processing audio with duration 00:06.000
+2026-08-26 22:48:26,050 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-08-26 22:48:26,862 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2026-08-26 22:48:28,692 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:48:45,490 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:49:00,437 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-26 22:49:23,693 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:03:10,432 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:03:41,830 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:03:45,691 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:03:50,690 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:04:16,018 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:05:17,106 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:06:09,158 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:06:14,137 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:24:13,628 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:29:29,364 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:29:52,290 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:35:34,598 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:36:04,035 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:36:15,351 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:36:45,522 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:36:49,102 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:37:24,556 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:37:38,142 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:38:59,866 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:39:48,623 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:40:09,456 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:40:40,519 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:41:11,308 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:42:33,733 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:42:41,457 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:43:40,916 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:13,015 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:21,070 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:25,727 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:32,091 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:38,618 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:44:59,194 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:45:06,230 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:45:26,306 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:45:32,620 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:45:38,317 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:47:41,403 pystray._base ERROR: An error occurred when calling message handler
+Traceback (most recent call last):
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 412, in _dispatcher
+    return int(icon._message_handlers.get(
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        uMsg, lambda w, l: 0)(wParam, lParam) or 0)
+        ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 224, in _on_notify
+    descriptors[index - 1](self)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 328, in inner
+    callback(self)
+    ~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 453, in __call__
+    return self._action(icon, self)
+           ~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 548, in wrapper0
+    return action()
+  File "E:\Dude\dude\core\ui.py", line 132, in <lambda>
+    pystray.MenuItem("Quit DUDE", lambda: self.on_quit()),
+                                          ^^^^^^^^^^^^
+AttributeError: 'Tray' object has no attribute 'on_quit'. Did you mean: 'on_quit_cb'?
+2026-08-27 08:47:49,151 pystray._base ERROR: An error occurred when calling message handler
+Traceback (most recent call last):
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 412, in _dispatcher
+    return int(icon._message_handlers.get(
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        uMsg, lambda w, l: 0)(wParam, lParam) or 0)
+        ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 224, in _on_notify
+    descriptors[index - 1](self)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 328, in inner
+    callback(self)
+    ~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 453, in __call__
+    return self._action(icon, self)
+           ~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 548, in wrapper0
+    return action()
+  File "E:\Dude\dude\core\ui.py", line 132, in <lambda>
+    pystray.MenuItem("Quit DUDE", lambda: self.on_quit()),
+                                          ^^^^^^^^^^^^
+AttributeError: 'Tray' object has no attribute 'on_quit'. Did you mean: 'on_quit_cb'?
+2026-08-27 08:48:30,672 pystray._base ERROR: An error occurred when calling message handler
+Traceback (most recent call last):
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 412, in _dispatcher
+    return int(icon._message_handlers.get(
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        uMsg, lambda w, l: 0)(wParam, lParam) or 0)
+        ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_win32.py", line 224, in _on_notify
+    descriptors[index - 1](self)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 328, in inner
+    callback(self)
+    ~~~~~~~~^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 453, in __call__
+    return self._action(icon, self)
+           ~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\pystray\_base.py", line 548, in wrapper0
+    return action()
+  File "E:\Dude\dude\core\ui.py", line 132, in <lambda>
+    pystray.MenuItem("Quit DUDE", lambda: self.on_quit()),
+                                          ^^^^^^^^^^^^
+AttributeError: 'Tray' object has no attribute 'on_quit'. Did you mean: 'on_quit_cb'?
+2026-08-27 08:48:54,576 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 08:59:57,582 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:11:11,563 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:11:38,796 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:12:07,574 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:12:51,580 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:14:35,491 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:15:33,880 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:16:21,299 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:18:32,507 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:18:36,878 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:18:50,140 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:18:54,664 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:19:05,886 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:19:21,597 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:20:52,067 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:21:13,303 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:22:08,508 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:22:38,869 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:22:49,529 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:22:54,659 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:23:08,188 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:23:19,424 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:24:39,402 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:24:43,984 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:24:49,163 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:24:53,005 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:24:59,182 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:25:11,070 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:25:45,236 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:25:57,501 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:26:32,528 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:29:14,103 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:29:43,677 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:29:48,200 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:29:52,625 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:29:57,272 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:30:06,042 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:30:26,455 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:43:14,332 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:43:40,272 comtypes.client._code_cache INFO: Could not import comtypes.gen, trying to create it.
+2026-08-27 09:43:40,272 comtypes.client._code_cache INFO: Created comtypes.gen directory: 'C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2026-08-27 09:43:40,272 comtypes.client._code_cache INFO: Writing __init__.py file: 'C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen\__init__.py'
+2026-08-27 09:43:40,303 comtypes.client._code_cache INFO: Using writeable comtypes cache directory: 'C:\Users\duvvu\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2026-08-27 09:43:40,346 comtypes.client._generate INFO: Could not import comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4: No module named 'comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4'
+2026-08-27 09:43:40,378 comtypes.client._generate INFO: # Generating comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4
+2026-08-27 09:43:40,450 comtypes.client._generate INFO: # Generating comtypes.gen.SpeechLib
+2026-08-27 09:43:40,457 comtypes.client._generate INFO: Could not import comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0: No module named 'comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0'
+2026-08-27 09:43:40,458 comtypes.client._generate INFO: # Generating comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0
+2026-08-27 09:43:40,465 comtypes.client._generate INFO: # Generating comtypes.gen.stdole
+2026-08-27 09:43:50,972 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2026-08-27 09:43:53,079 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:44:43,511 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:58:03,440 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:59:05,763 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:59:07,207 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 09:59:31,959 httpx2 INFO: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-27 11:31:12,554 httpx2 INFO: HTTP Request: POST https://router.bynara.id/v1/chat/completions "HTTP/1.1 200 OK"

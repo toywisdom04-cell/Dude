@@ -1,0 +1,1 @@
+# PowerShell Output Capture Guide# Pipe any command to this folder for reliable reading:# e.g. Get-Process | Out-File E:\Dude\dude\workflows\ps_out\procs.txt# e.g. Get-ChildItem C:\ -Depth 1 | Out-File E:\Dude\dude\workflows\ps_out\dir.txt
